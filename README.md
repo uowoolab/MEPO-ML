@@ -8,7 +8,7 @@ This project is still **WORK IN PROGRESS**. Currently only includes minimum code
 ## Prerequisites
 
 This code is tested with the following Python version and packages:
-- Python **3.11.8**
+- Python **3.11.7**
 - pymatgen **2024.2.8**
 - pytorch **2.1.2**
 - pytorch_geometric **2.4.0**
