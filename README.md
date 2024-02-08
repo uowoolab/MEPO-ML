@@ -1,9 +1,9 @@
 # MEPO-ML
 A graph attention network based model for predicting atomic partial charges in metal-organic frameworks.
 
-## To be done
+### Notes
 
-This project is still **WORK IN PROGRESS**. Currently only includes minimum codes to use the model to generate the charges. Codes and files for training new models or reproducing our results will be added in the future.
+This project is still **WORK IN PROGRESS**. Currently only includes minimum codes to use the model to generate the charges (i.e. inference only), which is ready for production. Codes and files for training new models or reproducing our results will be added in the future.
 
 ## Prerequisites
 
@@ -25,7 +25,7 @@ For users with [conda](https://docs.anaconda.com/free/miniconda/) already instal
 conda create --name mepoml python=3.11 pymatgen=2024.2.8 pytorch=2.1.2 pyg=2.4.0 cpuonly -c conda-forge -c pytorch -c pyg --solver=libmamba
 ```
 
-For users that want to utilize their CUDA devices (i.e. an nvidia gpu), simply replace `cpuonly` from the above command to `pytorch-cuda=11.8 -c nvidia` or `pytorch-cuda=12.1 -c nvidia` depending on the device. We do not recommand doing this for inference only; on the other hand, this is prefered when training a new model.
+Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [predict.py](predict.py) to utilize their GPU(s).
 
 ## Usage
 
@@ -36,7 +36,7 @@ For users that want to utilize their CUDA devices (i.e. an nvidia gpu), simply r
 
 ### Use Case 1: Assigning charges for a single CIF
 
-To predict charges for one structure (`/path/to/src/` can be absolute or relative paths):
+To assign charges for one structure (`/path/to/src/` can be absolute or relative paths):
 
 ```
 python predict.py --cif /path/to/src/MOF1.cif
@@ -59,7 +59,7 @@ Use the `--dst` flag to specify output location (both `/path/to/src/` and `/path
 python predict.py --cif /path/to/src/MOF2.cif --dst /path/to/dst/
 ```
 
-This will generate a new CIF in the specify directory:
+This will generate the new CIF in the specify directory:
 
 ```
 /path/to/dst/
@@ -69,9 +69,9 @@ This will generate a new CIF in the specify directory:
 └── ...
 ```
 
-### Use Case 3: Assigning charges for a batch of CIFs
+### Use Case 3: Assigning charges in batches
 
-To assign for all structures in the entire directory, use `--src` and `--dst` to specify the input and output locations (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths):
+To assign charges for all structures in a directory, use `--src` and `--dst` to specify the input and output locations (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths):
 
 ```
 python predict.py --src /path/to/src/ --dst /path/to/dst/
