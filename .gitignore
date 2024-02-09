@@ -1,6 +1,7 @@
 # project specific ignores
 feature_scaler.npz
 mepoml_model.pt
+assign_mepoml_charges.ipynb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
