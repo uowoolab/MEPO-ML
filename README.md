@@ -13,10 +13,12 @@ This code is tested with the following Python version and packages:
 - pytorch **2.1.2**
 - pytorch_geometric **2.4.0**
 
-We recommand using `conda` to create a separate environment to use MEPO-ML; for minimal installations, [install miniconda](https://docs.anaconda.com/free/miniconda/). We also suggest configuring `conda` to use [the libmamba solver](https://conda.github.io/conda-libmamba-solver/user-guide/) for faster environment creation. Once done, run the following command to create the MEPO-ML environment:
+We recommand using `conda` to create a separate environment to use MEPO-ML; for minimal installations, [install miniconda](https://docs.anaconda.com/free/miniconda/). Once installed, run the following commands (one line at a time) to create the MEPO-ML environment:
 
 ```
-conda create --name mepoml python=3.11 pymatgen=2024.2.8 pytorch=2.1.2 cpuonly pyg=2.4.0 -c conda-forge -c pytorch -c pyg --solver=libmamba
+conda create --name mepoml python=3.11 
+conda activate mepoml
+pip install pymatgen=2024.2.8 torch=2.1 torch_geometric=2.4
 ```
 
 Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [predict.py](predict.py) to utilize GPU(s).
@@ -27,6 +29,7 @@ Currently, the code is intended to be run on CPUs only, since the model inferenc
 2. Download and extract [mepo-ml.zip](https://github.com/uowoolab/MEPO-ML/releases/latest/download/asset-name.zip) (can also be found in the *Release* tab); **do not clone** this repo since it does not include the trained model
 3. Open a terminal in the location of the extracted code and activate the Python environment (`conda activate mepoml`)
 4. Choose one of the following use cases below and run the code accordingly (example outputs can be found in the [example_output](example_output) folder)
+
 
 ### Use Case 1: Assigning charges for a single CIF
 
