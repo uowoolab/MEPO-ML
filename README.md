@@ -13,25 +13,19 @@ This code is tested with the following Python version and packages:
 - pytorch **2.1.2**
 - pytorch_geometric **2.4.0**
 
-For users starting from scratch, we suggest [installing miniforge/mamba](https://github.com/conda-forge/miniforge) to create the environment:
+We recommand using `conda` to create a separate environment to use MEPO-ML; for minimal installations, [install miniconda](https://docs.anaconda.com/free/miniconda/). We also suggest configuring `conda` to use [the libmamba solver](https://conda.github.io/conda-libmamba-solver/user-guide/) for faster environment creation. Once done, run the following command to create the MEPO-ML environment:
 
 ```
-mamba create --name mepoml python=3.11 pymatgen=2024.2.8 pytorch=2.1.2 pyg=2.4.0 cpuonly -c pytorch -c pyg
+conda create --name mepoml python=3.11 pymatgen=2024.2.8 pytorch=2.1.2 cpuonly pyg=2.4.0 -c conda-forge -c pytorch -c pyg --solver=libmamba
 ```
 
-For users with [conda](https://docs.anaconda.com/free/miniconda/) already installed, we suggest switching to [the libmamba solver](https://conda.github.io/conda-libmamba-solver/user-guide/) and creating a new environment for using our model:
-
-```
-conda create --name mepoml python=3.11 pymatgen=2024.2.8 pytorch=2.1.2 pyg=2.4.0 cpuonly -c conda-forge -c pytorch -c pyg --solver=libmamba
-```
-
-Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [predict.py](predict.py) to utilize their GPU(s).
+Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [predict.py](predict.py) to utilize GPU(s).
 
 ## Usage
 
 1. Please make sure the MOF structures are converted to **CIF format and P1 symmetry** (examples inputs can be found in the [example_input](example_input) folder)
 2. Download and extract [mepo-ml.zip](https://github.com/uowoolab/MEPO-ML/releases/latest/download/asset-name.zip) (can also be found in the *Release* tab); **do not clone** this repo since it does not include the trained model
-3. Open a terminal in the location of the extracted code and activate the Python environment (`mamba activate mepoml` or `conda activate mepoml`)
+3. Open a terminal in the location of the extracted code and activate the Python environment (`conda activate mepoml`)
 4. Choose one of the following use cases below and run the code accordingly (example outputs can be found in the [example_output](example_output) folder)
 
 ### Use Case 1: Assigning charges for a single CIF
