@@ -21,7 +21,7 @@ conda activate mepoml
 pip install pymatgen=2024.2.8 torch=2.1 torch_geometric=2.4
 ```
 
-Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [predict.py](predict.py) to utilize GPU(s).
+Currently, the code is intended to be run on CPUs only, since the model inference time is minimal compared to the cost of generating the graph and the descriptors (node features). Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [assign_mepoml_charges.py](assign_mepoml_charges.py) to utilize GPU(s).
 
 ## Usage
 
@@ -36,7 +36,7 @@ Currently, the code is intended to be run on CPUs only, since the model inferenc
 To assign charges for one structure (`/path/to/src/` can be absolute or relative paths):
 
 ```
-python predict.py --cif /path/to/src/MOF1.cif
+python assign_mepoml_charges.py --src /path/to/src/MOF1.cif
 ```
 
 This will generate a new CIF in the original directory:
@@ -53,7 +53,7 @@ This will generate a new CIF in the original directory:
 Use the `--dst` flag to specify output location (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths)::
 
 ```
-python predict.py --cif /path/to/src/MOF2.cif --dst /path/to/dst/
+python assign_mepoml_charges.py --src /path/to/src/MOF2.cif --dst /path/to/dst/
 ```
 
 This will generate the new CIF in the specify directory:
@@ -66,12 +66,12 @@ This will generate the new CIF in the specify directory:
 └── ...
 ```
 
-### Use Case 3: Assigning charges in batches
+### Use Case 3: Batch charge assignments for all CIFs in a directory
 
 To assign charges for all structures in a directory, use `--src` and `--dst` to specify the input and output locations (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths):
 
 ```
-python predict.py --src /path/to/src/ --dst /path/to/dst/
+python assign_mepoml_charges.py --src /path/to/src/ --dst /path/to/dst/
 ```
 
 This will generate new CIFs in the target directory:
@@ -88,3 +88,5 @@ This will generate new CIFs in the target directory:
 ├── MOF5.cif
 └── ...
 ```
+
+**Note**: Batch assignments are also possible without `--dst`, where will store the new CIFs in `/path/to/src/`.
