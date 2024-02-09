@@ -6,13 +6,16 @@ from elements import en_ghosh
 
 
 def get_dist_features(cif_struct, symbols, n_atoms):
+    # obtain properties list
     property_en = np.array([en_ghosh[symbol] for symbol in symbols])
 
+    # determine the number of mirror images required in the supercell
     max_frac = cif_struct.lattice.get_fractional_coords([8.0, 8.0, 8.0])
     super_scale = np.ceil(max_frac).astype(int)
     list_options = list(product(*[range(2 * i + 1) for i in super_scale]))
     super_options = np.array(list_options, dtype=float) - super_scale
 
+    # create the supercell in both fractional and cartesian coordinates
     frac_unit = np.array([atom.frac_coords for atom in cif_struct])
     frac_tiles = np.tile(frac_unit, (len(super_options), 1, 1))
     super_tiles = np.repeat(super_options, n_atoms, axis=0).reshape(frac_tiles.shape)
@@ -21,6 +24,7 @@ def get_dist_features(cif_struct, symbols, n_atoms):
     unit_cell_idx = len(super_options) // 2
     cart_unit = cart_super[unit_cell_idx]
 
+    # parameters for descriptors
     r_0 = 1.0
     rad_cut = 8.0
     ang_cut = 6.0
@@ -32,20 +36,20 @@ def get_dist_features(cif_struct, symbols, n_atoms):
     adf_beta = 60.0
     acsf_ang_n_eta = 8
 
-    # rdf
+    # inits for atomic property weighted radial distribution functions (wRDF)
     rdf_n_bins = int((rad_cut - r_0) / rdf_bin_size)
     rdf_edges = np.linspace(r_0 + rdf_bin_size, rad_cut, num=rdf_n_bins)
 
-    # radial ACSF
+    # inits for radial ACSF
     acsf_rad_n_bins = int((rad_cut - r_0) / acsf_rad_bin_size)
     acsf_rad_edges = np.linspace(r_0 + acsf_rad_bin_size, rad_cut, num=acsf_rad_n_bins)
 
-    # adf
+    # inits for atomic property weighted angular distribution functions (wADF)
     adf_bin_size = np.deg2rad(adf_bin_size_degree)
     adf_n_bins = int(np.pi / adf_bin_size)
     adf_edges = np.linspace(adf_bin_size, np.pi, num=adf_n_bins)
 
-    # angular ACSF
+    # inits for angular ACSF
     acsf_ang_edges = np.linspace(r_0, ang_cut, num=acsf_ang_n_eta)
     acsf_ang_eta = 1 / (2 * (acsf_ang_edges**2))
     acsf_ang_lambda = [-1, 1]
@@ -54,25 +58,31 @@ def get_dist_features(cif_struct, symbols, n_atoms):
         list(product(acsf_ang_lambda, acsf_ang_eta))
     ).T
 
+    # generate descriptors for one atom at a time to save memory
     features_list = []
     for cart_i in cart_unit:
+        # compute distances between atom i to all other atoms in the supercell
         dist_to_i = np.linalg.norm(cart_super - cart_i, axis=-1)
 
+        # obtain distances within the cutoffs for radial descriptors
         rad_bool = (dist_to_i >= r_0) & (dist_to_i <= rad_cut)
         rad_p = property_en[np.nonzero(rad_bool)[1]]
         rad_dist = dist_to_i[rad_bool]
 
+        # compute wRDF
         rdf_diff_bins = (
             np.repeat(rad_dist, rdf_n_bins).reshape(-1, rdf_n_bins) - rdf_edges
         )
         rdf_gauss_bins = np.exp(-rdf_alpha * (rdf_diff_bins**2))
         rdf = (rdf_gauss_bins.T * rad_p).sum(axis=1)
 
+        # compute RWAAP
         wap_rad_btm = rdf_gauss_bins.sum(axis=0)
         wap_rad = np.divide(
             rdf, wap_rad_btm, out=np.zeros(rdf_n_bins), where=(wap_rad_btm != 0)
         )
 
+        # compute wRACSF
         acsf_rad_fcut = (np.cos(rad_dist * np.pi / rad_cut) + 1) * 0.5
         acsf_rad_diff_bins = (
             np.repeat(rad_dist, acsf_rad_n_bins).reshape(-1, acsf_rad_n_bins)
@@ -81,12 +91,13 @@ def get_dist_features(cif_struct, symbols, n_atoms):
         acsf_rad_gauss_bins = np.exp(-acsf_rad_eta * (acsf_rad_diff_bins**2))
         acsf_rad = (rad_p * acsf_rad_fcut * acsf_rad_gauss_bins.T).sum(axis=1)
 
+        # obtain distances within the cutoffs for angular descriptors
         ang_bool = (dist_to_i >= r_0) & (dist_to_i <= ang_cut)
         ang_p = property_en[np.nonzero(ang_bool)[1]]
         ang_dist = dist_to_i[ang_bool]
 
         if len(ang_dist) > 1:
-            # angle calculation
+            # compute angles for all triplets (i,j,k) within the supercell
             ang_sphere_cart = cart_super[ang_bool]
             atoms_j, atoms_k = np.array(list(combinations(range(len(ang_dist)), 2))).T
             property_jk = ang_p[atoms_j] * ang_p[atoms_k]
@@ -107,18 +118,18 @@ def get_dist_features(cif_struct, symbols, n_atoms):
             cos_theta_ijk[cos_theta_ijk > 1.0] = 1.0
             theta_ijk = np.arccos(cos_theta_ijk)
 
-            # adf
+            # compute wADF
             adf_diff_bins = np.tile(theta_ijk, (adf_n_bins, 1)).T - adf_edges
             adf_gauss_bins = np.exp(-adf_beta * (adf_diff_bins**2))
             adf = (property_jk * adf_gauss_bins.T).sum(axis=1)
 
-            # angular WAP
+            # compute AWAAP
             wap_ang_btm = adf_gauss_bins.sum(axis=0)
             wap_ang = np.divide(
                 adf, wap_ang_btm, out=np.zeros(adf_n_bins), where=(wap_ang_btm != 0)
             )
 
-            # angular ACSF
+            # compute wAACSF
             acsf_ang_fcut = ((np.cos(d_ijk * np.pi / ang_cut) + 1) * 0.5).prod(axis=0)
             acsf_ang_pre = np.tile(cos_theta_ijk, (acsf_ang_n_bins, 1)).T
             acsf_ang_cos_bins = 1 + acsf_ang_lambda_bins * acsf_ang_pre
@@ -128,6 +139,7 @@ def get_dist_features(cif_struct, symbols, n_atoms):
             acsf_ang_bins *= property_jk * acsf_ang_fcut
             acsf_ang = acsf_ang_bins.sum(axis=1)
         else:
+            # no angular descriptors computed if there are not enough neighbours
             adf, wap_ang = np.zeros((2, adf_n_bins))
             acsf_ang = np.zeros(acsf_ang_n_bins)
 
@@ -148,8 +160,10 @@ def get_dist_features(cif_struct, symbols, n_atoms):
 
 
 def get_shell_features(bonds_full, property_matrix, n_atoms):
+    # convert adj_mat to adj_list
     adj_list = [bonds_full[bonds_full[:, 0] == i][:, 1:] for i in range(n_atoms)]
 
+    # init for shell descriptors
     n_shells = 4
     n_properties = 8
     shell_avg = np.zeros((n_atoms, n_properties * n_shells))
@@ -157,8 +171,11 @@ def get_shell_features(bonds_full, property_matrix, n_atoms):
     shell_diff = np.zeros((n_atoms, n_properties * n_shells))
 
     for source in range(n_atoms):
+        # skip atom if there's no neighbours
         if len(adj_list[source]) == 0:
             continue
+
+        # create a tree that represent coordination shells of the source atom
         tree = [np.array([[source, 0, 0, 0]]), adj_list[source]]
         for i in range(2, n_shells + 1):
             if len(tree[-1]) < 1:
@@ -173,6 +190,8 @@ def get_shell_features(bonds_full, property_matrix, n_atoms):
             tree.append(nodes)
             full_levels, idx = np.unique(np.vstack(tree), axis=0, return_index=True)
             tree[i] = full_levels[idx >= sum([len(tree[lv]) for lv in range(i)])]
+
+        # compute descriptors for each shell
         self_properties = property_matrix[source]
         for pos, level in enumerate(tree[1:]):
             level_properties = property_matrix[level[:, 0]]
