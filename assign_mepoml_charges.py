@@ -19,9 +19,17 @@ def assign_single(src_path, dst_path, s, m):
         warnings.simplefilter("ignore")
         cif_struct = CifParser(src_path).get_structures(primitive=False).pop()
 
+    # extract elemental symbols, double functioning as a disorder checker
+    try:
+        atom_symbols = [atom.specie.symbol for atom in cif_struct]
+    except AttributeError:
+        raise RuntimeError(
+            f"[{src_path}] One or more atoms in the structure have occupancies other than 1; "
+            "this may indicate crystallographic disorders in the structure. "
+            "Please make sure occupancies for all atoms are exactly 1 in the CIF file."
+        )
+
     # generate new atomic labels
-    n_atoms = len(cif_struct)
-    atom_symbols = [atom.specie.symbol for atom in cif_struct]
     atom_labels = []
     label_counter = {element: 0 for element in set(atom_symbols)}
     for symbol in atom_symbols:
@@ -43,6 +51,7 @@ def assign_single(src_path, dst_path, s, m):
     edges = bonds_full[:, [0, 1]].T
 
     # generate and scale chemical descriptors as node features
+    n_atoms = len(cif_struct)
     f_atom = np.array([atomic_properties[symbol] for symbol in atom_symbols])
     f_dist = get_dist_features(cif_struct, atom_symbols, n_atoms)
     f_shell = get_shell_features(bonds_full, f_atom, n_atoms)

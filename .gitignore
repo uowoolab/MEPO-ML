@@ -3,6 +3,7 @@ feature_scaler.npz
 mepoml_model.pt
 assign_mepoml_charges.ipynb
 MEPO-ML.zip
+test_cif/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

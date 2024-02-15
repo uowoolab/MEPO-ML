@@ -26,6 +26,7 @@ Currently, the code is intended to be run on CPUs only, since the model inferenc
 ## Usage
 
 1. Please make sure the MOF structures are converted to **CIF format and P1 symmetry** (examples inputs can be found in the [example_input](example_input) folder)
+   - Please also make sure all atoms in the unit cell have occupancies of exactly 1.
 2. Download and extract [MEPO-ML.zip](https://github.com/uowoolab/MEPO-ML/releases/latest/download/MEPO-ML.zip) (can also be found in the *Release* tab); **do not clone** this repo since it does not include the trained model
 3. Open a terminal in the location of the extracted code and activate the Python environment (`conda activate mepoml`)
 4. Choose one of the following use cases below and run the code accordingly (example outputs can be found in the [example_output](example_output) folder)
