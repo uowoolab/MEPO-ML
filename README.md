@@ -1,9 +1,8 @@
 # MEPO-ML
-A graph attention network based model for predicting atomic partial charges in metal-organic frameworks.
 
-### Notes
+Jun Luo, Omar Ben Said, Peigen Xie, Marco Gibaldi, Jake Burner, Cécile Pereira & Tom K. Woo
 
-This project is still **WORK IN PROGRESS**. Currently only includes minimum codes to use the model to generate the charges (i.e. inference only), which is ready for production. Codes and files for training new models or reproducing our results will be added in the future.
+MEPO-ML: a robust graph attention network model for rapid generation of partial atomic charges in metal-organic frameworks. *npj Comput Mater* **10**, 224 (2024). [https://doi.org/10.1038/s41524-024-01413-4](https://www.nature.com/articles/s41524-024-01413-4)
 
 ## Prerequisites
 
