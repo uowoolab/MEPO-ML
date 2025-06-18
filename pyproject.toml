@@ -1,0 +1,7 @@
+[project]
+name = "mepo-ml"
+version = "2.0.0"
+description = "A robust graph attention network model for rapid generation of partial atomic charges in metal-organic frameworks."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["gemmi>=0.7.1", "torch>=2.7.1", "torch-geometric>=2.6.1"]
