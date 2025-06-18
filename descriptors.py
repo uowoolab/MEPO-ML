@@ -1,16 +1,15 @@
 import torch
 from gemmi import UnitCell
-from torch import Tensor
 from torch_geometric.data import Data
 
 from elements import element_dict
 
 
 def featurize(
-    frac_coords: Tensor,
+    frac_coords: torch.Tensor,
     cell: UnitCell,
     atom_symbols: list[str],
-    ap_dict: Tensor,
+    ap_dict: dict,
 ):
     # prepare chemical data
     atom_nums = torch.tensor([element_dict[k] for k in atom_symbols], dtype=torch.long)
