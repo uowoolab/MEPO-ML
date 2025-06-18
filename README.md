@@ -36,12 +36,12 @@ The next update of MEPO-ML will be pushed to `PyPI` as a package. For now, pleas
 
 ## Usage
 
-***Note***: Currently, the code is using CPU for inferencing. Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [assign_mepoml_charges.py](assign_mepoml_charges.py) to utilize GPU(s).
+***Note***: Currently, the code is using CPU for inferencing. Advanced users can install the CUDA or ROCm version of pytorch and modify codes in [mepoml.py](mepoml.py) to utilize GPU(s).
 
 1. Please make sure the MOF structures are converted to **CIF format and P1 symmetry** (examples inputs can be found in the [example_input](example_input) folder)
    - Please also make sure all atoms in the unit cell have occupancies of exactly 1.
 2. Download and extract [MEPO-ML.zip](https://github.com/uowoolab/MEPO-ML/releases/latest/download/MEPO-ML.zip) (can also be found in the *Release* tab); **do not clone** this repo since it does not include the trained model
-3. Open a terminal in the location of the extracted code and activate the Python environment
+3. Open a terminal in the location of the extracted code and activate the Python environment with the abovementioned libraries
 4. Choose one of the following use cases below and run the code accordingly (example outputs can be found in the [example_output](example_output) folder)
 
 
@@ -50,7 +50,7 @@ The next update of MEPO-ML will be pushed to `PyPI` as a package. For now, pleas
 To assign charges for one structure (`/path/to/src/` can be absolute or relative paths):
 
 ```
-python assign_mepoml_charges.py --src /path/to/src/MOF1.cif
+python mepoml.py --src /path/to/src/MOF1.cif
 ```
 
 This will generate a new CIF in the original directory:
@@ -67,7 +67,7 @@ This will generate a new CIF in the original directory:
 Use the `--dst` flag to specify output location (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths)::
 
 ```
-python assign_mepoml_charges.py --src /path/to/src/MOF2.cif --dst /path/to/dst/
+python mepoml.py --src /path/to/src/MOF2.cif --dst /path/to/dst/
 ```
 
 This will generate the new CIF in the specify directory:
@@ -85,7 +85,7 @@ This will generate the new CIF in the specify directory:
 To assign charges for all structures in a directory, use `--src` and `--dst` to specify the input and output locations (both `/path/to/src/` and `/path/to/dst/` can be absolute or relative paths):
 
 ```
-python assign_mepoml_charges.py --src /path/to/src/ --dst /path/to/dst/
+python mepoml.py --src /path/to/src/ --dst /path/to/dst/
 ```
 
 This will generate new CIFs in the target directory:

@@ -1,9 +1,6 @@
 # project specific ignores
-feature_scaler.npz
+elemental_data.pt
 mepoml_model.pt
-assign_mepoml_charges.ipynb
-MEPO-ML.zip
-test_cif/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
