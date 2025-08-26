@@ -16,6 +16,10 @@ Read our publication on *npj Computational Material*! [**DOI:** 10.1038/s41524-0
 }
 ```
 
+## Important Note
+
+The version corresponding to the publication is ***v1.0.1***. You can download it [here](https://github.com/uowoolab/MEPO-ML/releases/tag/v1.0.1) and check out its README [here](https://github.com/uowoolab/MEPO-ML/tree/1.0.1).
+
 ### Update 2.0 Highlights
 
 This is a major update since our publication:
